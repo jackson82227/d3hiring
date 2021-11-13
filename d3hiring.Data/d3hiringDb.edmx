@@ -1,0 +1,194 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="d3hiringModel.Store" Provider="MySql.Data.MySqlClient" ProviderManifestToken="8.0" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="lesson">
+          <Key>
+            <PropertyRef Name="idlesson" />
+          </Key>
+          <Property Name="idlesson" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="idteacher" Type="int" Nullable="false" />
+          <Property Name="idstudent" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="student">
+          <Key>
+            <PropertyRef Name="idstudent" />
+          </Key>
+          <Property Name="idstudent" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="email" Type="varchar" MaxLength="255" Nullable="false" />
+          <Property Name="active" Type="int" />
+        </EntityType>
+        <EntityType Name="teacher">
+          <Key>
+            <PropertyRef Name="idteacher" />
+          </Key>
+          <Property Name="idteacher" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="email" Type="varchar" MaxLength="255" Nullable="false" />
+          <Property Name="active" Type="int" />
+        </EntityType>
+        <Association Name="fk_student">
+          <End Role="student" Type="Self.student" Multiplicity="1" />
+          <End Role="lesson" Type="Self.lesson" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="student">
+              <PropertyRef Name="idstudent" />
+            </Principal>
+            <Dependent Role="lesson">
+              <PropertyRef Name="idstudent" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_teacher">
+          <End Role="teacher" Type="Self.teacher" Multiplicity="1" />
+          <End Role="lesson" Type="Self.lesson" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="teacher">
+              <PropertyRef Name="idteacher" />
+            </Principal>
+            <Dependent Role="lesson">
+              <PropertyRef Name="idteacher" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="d3hiringModelStoreContainer">
+          <EntitySet Name="lesson" EntityType="Self.lesson" Schema="d3hiring" store:Type="Tables" />
+          <EntitySet Name="student" EntityType="Self.student" Schema="d3hiring" store:Type="Tables" />
+          <EntitySet Name="teacher" EntityType="Self.teacher" Schema="d3hiring" store:Type="Tables" />
+          <AssociationSet Name="fk_student" Association="Self.fk_student">
+            <End Role="student" EntitySet="student" />
+            <End Role="lesson" EntitySet="lesson" />
+          </AssociationSet>
+          <AssociationSet Name="fk_teacher" Association="Self.fk_teacher">
+            <End Role="teacher" EntitySet="teacher" />
+            <End Role="lesson" EntitySet="lesson" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="d3hiringModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityContainer Name="d3hiringDb" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="students" EntityType="d3hiringModel.student" />
+          <EntitySet Name="teachers" EntityType="d3hiringModel.teacher" />
+          <EntitySet Name="lessons" EntityType="d3hiringModel.lesson" />
+          <AssociationSet Name="fk_student" Association="d3hiringModel.fk_student">
+            <End Role="student" EntitySet="students" />
+            <End Role="lesson" EntitySet="lessons" />
+          </AssociationSet>
+          <AssociationSet Name="fk_teacher" Association="d3hiringModel.fk_teacher">
+            <End Role="teacher" EntitySet="teachers" />
+            <End Role="lesson" EntitySet="lessons" />
+          </AssociationSet>
+          </EntityContainer>
+        <EntityType Name="student">
+          <Key>
+            <PropertyRef Name="idstudent" />
+          </Key>
+          <Property Name="idstudent" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="email" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="active" Type="Int32" DefaultValue="1" />
+          <NavigationProperty Name="lessons" Relationship="d3hiringModel.fk_student" FromRole="student" ToRole="lesson" />
+        </EntityType>
+        <EntityType Name="teacher">
+          <Key>
+            <PropertyRef Name="idteacher" />
+          </Key>
+          <Property Name="idteacher" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="email" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="active" Type="Int32" DefaultValue="1" />
+          <NavigationProperty Name="lessons" Relationship="d3hiringModel.fk_teacher" FromRole="teacher" ToRole="lesson" />
+        </EntityType>
+        <EntityType Name="lesson">
+          <Key>
+            <PropertyRef Name="idlesson" />
+          </Key>
+          <Property Name="idlesson" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="idteacher" Type="Int32" Nullable="false" />
+          <Property Name="idstudent" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="student" Relationship="d3hiringModel.fk_student" FromRole="lesson" ToRole="student" />
+          <NavigationProperty Name="teacher" Relationship="d3hiringModel.fk_teacher" FromRole="lesson" ToRole="teacher" />
+        </EntityType>
+        <Association Name="fk_student">
+          <End Type="d3hiringModel.student" Role="student" Multiplicity="1" />
+          <End Type="d3hiringModel.lesson" Role="lesson" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="student">
+              <PropertyRef Name="idstudent" />
+            </Principal>
+            <Dependent Role="lesson">
+              <PropertyRef Name="idstudent" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_teacher">
+          <End Type="d3hiringModel.teacher" Role="teacher" Multiplicity="1" />
+          <End Type="d3hiringModel.lesson" Role="lesson" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="teacher">
+              <PropertyRef Name="idteacher" />
+            </Principal>
+            <Dependent Role="lesson">
+              <PropertyRef Name="idteacher" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="d3hiringModelStoreContainer" CdmEntityContainer="d3hiringDb">
+          <EntitySetMapping Name="students">
+            <EntityTypeMapping TypeName="d3hiringModel.student">
+              <MappingFragment StoreEntitySet="student">
+                <ScalarProperty Name="active" ColumnName="active" />
+                <ScalarProperty Name="email" ColumnName="email" />
+                <ScalarProperty Name="idstudent" ColumnName="idstudent" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="teachers">
+            <EntityTypeMapping TypeName="d3hiringModel.teacher">
+              <MappingFragment StoreEntitySet="teacher">
+                <ScalarProperty Name="active" ColumnName="active" />
+                <ScalarProperty Name="email" ColumnName="email" />
+                <ScalarProperty Name="idteacher" ColumnName="idteacher" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="lessons">
+            <EntityTypeMapping TypeName="d3hiringModel.lesson">
+              <MappingFragment StoreEntitySet="lesson">
+                <ScalarProperty Name="idstudent" ColumnName="idstudent" />
+                <ScalarProperty Name="idteacher" ColumnName="idteacher" />
+                <ScalarProperty Name="idlesson" ColumnName="idlesson" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="true" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>
