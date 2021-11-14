@@ -20,35 +20,42 @@ namespace d3hiring.MVC.Controllers
         {
             try
             {
-                var result = new RetrieveForNotificationsResult();
-
-                using (var db = new d3hiringDb())
+                if (data != null && data.teacher != null && data.notification != null)
                 {
-                    //Get Student registered under this teacher
-                    var tempResult = lessonBiz.getActiveStudentsByTeacherInLesson(db, data.teacher);
-                    foreach (var item in tempResult)
-                    {
-                        result.recipients.Add(item);
-                    }
+                    var result = new RetrieveForNotificationsResult();
 
-                    //Get student from the notification
-                    var startIndex = data.notification.IndexOf('@', 0);
-                    if(startIndex > -1)
+                    using (var db = new d3hiringDb())
                     {
-                        var emailList = data.notification.Substring(startIndex + 1);
-                        foreach (var item in emailList.Split(new string[] { " @" }, StringSplitOptions.None))
+                        //Get Student registered under this teacher
+                        var tempResult = lessonBiz.getActiveStudentsByTeacherInLesson(db, data.teacher);
+                        foreach (var item in tempResult)
                         {
-                            //Check student if exist and active
-                            var student = studentBiz.getStudentByEmail(db, item.Trim());
-                            if (student != null && student.active == 1)
+                            result.recipients.Add(item);
+                        }
+
+                        //Get student from the notification
+                        var startIndex = data.notification.IndexOf('@', 0);
+                        if (startIndex > -1)
+                        {
+                            var emailList = data.notification.Substring(startIndex + 1);
+                            foreach (var item in emailList.Split(new string[] { " @" }, StringSplitOptions.None))
                             {
-                                //Must be registed before and active
-                                result.recipients.Add(student.email);
+                                //Check student if exist and active
+                                var student = studentBiz.getStudentByEmail(db, item.Trim());
+                                if (student != null && student.active == 1)
+                                {
+                                    //Must be registed before and active
+                                    result.recipients.Add(student.email);
+                                }
                             }
                         }
                     }
+                    return CreateNoContentResponse(JsonConvert.SerializeObject(result));
                 }
-                return CreateNoContentResponse(JsonConvert.SerializeObject(result));
+                else
+                {
+                    return CreateErrorResponse(new Exception("Fail to read request body."));
+                }
             }
             catch (Exception ex)
             {

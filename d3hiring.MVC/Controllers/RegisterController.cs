@@ -15,28 +15,35 @@ namespace d3hiring.MVC.Controllers
         {
             try
             {
-                using (var db = new d3hiringDb())
+                if (data != null && data.teacher !=null && data.students !=null)
                 {
-                    using (var transaction = db.Database.BeginTransaction())
+                    using (var db = new d3hiringDb())
                     {
-                        //Get Teacher
-                        var teacherObj = teacherBiz.registerTeacherByEmail(db, data.teacher.Trim());
-
-                        foreach (var item in data.students)
+                        using (var transaction = db.Database.BeginTransaction())
                         {
-                            //Get Student
-                            var studentObj = studentBiz.registerStudentByEmail(db, item.Trim());
+                            //Get Teacher
+                            var teacherObj = teacherBiz.registerTeacherByEmail(db, data.teacher.Trim());
 
-                            //Register to lesson
-                            lessonBiz.registerStudentToLesson(db, teacherObj, studentObj);
+                            foreach (var item in data.students)
+                            {
+                                //Get Student
+                                var studentObj = studentBiz.registerStudentByEmail(db, item.Trim());
 
+                                //Register to lesson
+                                lessonBiz.registerStudentToLesson(db, teacherObj, studentObj);
+
+                            }
+
+                            db.SaveChanges();
+                            transaction.Commit();
                         }
-
-                        db.SaveChanges();
-                        transaction.Commit();
                     }
+                    return CreateNoContentResponse("");
                 }
-                return CreateNoContentResponse("");
+                else
+                {
+                    return CreateErrorResponse(new Exception("Fail to read request body."));
+                }               
             }
             catch (Exception ex)
             {

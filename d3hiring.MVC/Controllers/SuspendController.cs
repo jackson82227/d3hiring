@@ -20,20 +20,28 @@ namespace d3hiring.MVC.Controllers
         {
             try
             {
-                using (var db = new d3hiringDb())
-                {
-                    using (var transaction = db.Database.BeginTransaction())
-                    {
-                        if(studentBiz.suspendStudentByEmail(db, data.student.Trim()) != null)
-                        {
-                            db.SaveChanges();
-                            transaction.Commit();
-                        }
+                if (data != null && !String.IsNullOrEmpty(data.student))
 
-                        //Todo: What if student not found ?
+                {
+                    using (var db = new d3hiringDb())
+                    {
+                        using (var transaction = db.Database.BeginTransaction())
+                        {
+                            if (studentBiz.suspendStudentByEmail(db, data.student.Trim()) != null)
+                            {
+                                db.SaveChanges();
+                                transaction.Commit();
+                            }
+
+                            //Todo: What if student not found ?
+                        }
                     }
+                    return CreateNoContentResponse("");
                 }
-                return CreateNoContentResponse("");
+                else
+                {
+                    return CreateErrorResponse(new Exception("Fail to read request body."));
+                }
             }
             catch (Exception ex)
             {
